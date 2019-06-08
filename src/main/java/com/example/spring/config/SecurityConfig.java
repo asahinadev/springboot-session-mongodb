@@ -60,7 +60,15 @@ public class SecurityConfig
 
 		// 標準
 		super.configure(web);
-		web.ignoring().antMatchers("/webjars/**", "/error/**", "/css/**", "/js/**", "/image/**", "/favicon.ico");
+		web.ignoring().antMatchers(
+				"/webjars/**",
+				"/error/**",
+				"/css/**",
+				"/js/**",
+				"/image/**",
+				"/favicon.ico"
+
+		);
 
 	}
 
@@ -90,9 +98,11 @@ public class SecurityConfig
 		// ログアウト設定
 		http.logout()
 				.logoutRequestMatcher(new AntPathRequestMatcher("/logout**"))
-				.logoutSuccessUrl(LOGIN_PAGE + "?logout")
+				.logoutSuccessUrl(LOGIN_PAGE + "?logout");
+
+		// リメンバーミー
+		http.rememberMe();
 		/**/
-		;
 
 	}
 }

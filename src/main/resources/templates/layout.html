@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<html class="h-100" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 
@@ -7,68 +7,89 @@
 
 <th:block th:fragment="head">
 
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
-<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/css/bootstrap.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/font-awesome/css/all.min.css}" />
+	<link rel="stylesheet" type="text/css" th:href="@{/webjars/datatables/css/dataTables.bootstrap4.css}" />
 
-<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
-<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
-<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+	<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+	<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+	<script th:src="@{/webjars/datatables/js/jquery.dataTables.min.js}"></script>
+	<script th:src="@{/webjars/datatables/js/dataTables.bootstrap4.min.js}"></script>
 
-<script th:src="@{/js/common.js}"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/common.css}" />
+	<script th:src="@{/js/common.js}"></script>
 
 </th:block>
 
 </head>
 
 <body class="h-100">
-    <header th:fragment="header(title, active)">
-        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-            <a class="navbar-brand" href="#" th:text="${title}">レイアウト</a>
 
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#headerNavi">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+	<!-- layout::header(title, active) -->
+	<header th:fragment="header(title, active)">
+		<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+			<a class="navbar-brand" href="#" th:text="${title}">レイアウト</a>
 
-            <div class="collapse navbar-collapse" id="headerNavi">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item" th:classappend="${active == 'home' ? 'active' : ''}">
-                        <a class="nav-link" href="#" th:href="@{/}">Home</a>
-                    </li>
-                    <li class="nav-item" th:classappend="${active == 'users' ? 'active' : ''}">
-                        <a class="nav-link" href="#" th:href="@{/user}">Users</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#headerNavi">
+				<span class="navbar-toggler-icon"></span>
+			</button>
 
-    <div class="alert alert-success alert-dismissible fade show" role="alert" th:fragment="alert_success(message)" th:if="${message}">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        [[${message}]]
-    </div>
+			<div class="collapse navbar-collapse" id="headerNavi">
+				<ul class="navbar-nav mr-auto">
+					<li class="nav-item" th:classappend="${active == 'home' ? 'active' : ''}">
+						<a class="nav-link" href="#" th:href="@{/}">Home</a>
+					</li>
+					<li class="nav-item" th:classappend="${active == 'users' ? 'active' : ''}" sec:authorize="isAuthenticated()">
+						<a class="nav-link" href="#" th:href="@{/user}">Users</a>
+					</li>
+				</ul>
+				<ul class="navbar-nav my-lg-0">
+					<li class="nav-item" th:classappend="${active == 'login' ? 'active' : ''}" sec:authorize="!isAuthenticated()">
+						<a class="btn btn-outline-info m-1" href="#" th:href="@{/login}">Login</a>
+					</li>
+					<li class="nav-item" th:classappend="${active == 'signup' ? 'active' : ''}" sec:authorize="!isAuthenticated()">
+						<a class="btn btn-outline-info m-1" href="#" th:href="@{/signup}">Sign Up</a>
+					</li>
+					<li class="nav-item active" sec:authorize="isAuthenticated()">
+						<a class="btn btn-outline-info m-1" href="#" th:href="@{/logout}">Logout</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</header>
 
-    <div class="alert alert-info alert-dismissible fade show" role="alert" th:fragment="alert_info(message)" th:if="${message}">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        [[${message}]]
-    </div>
+	<!-- layout::alert_success(message) -->
+	<div class="alert alert-success alert-dismissible fade show" role="alert" th:fragment="alert_success(message)" th:if="${message}">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		[[${message}]]
+	</div>
 
-    <div class="alert alert-warning alert-dismissible fade show" role="alert" th:fragment="alert_warning(message)" th:if="${message}">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        [[${message}]]
-    </div>
+	<!-- layout::alert_info(message) -->
+	<div class="alert alert-info alert-dismissible fade show" role="alert" th:fragment="alert_info(message)" th:if="${message}">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		[[${message}]]
+	</div>
 
-    <div class="alert alert-danger alert-dismissible fade show" role="alert" th:fragment="alert_danger(message)" th:if="${message}">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        [[${message}]]
-    </div>
+	<!-- layout::alert_warning(message) -->
+	<div class="alert alert-warning alert-dismissible fade show" role="alert" th:fragment="alert_warning(message)" th:if="${message}">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		[[${message}]]
+	</div>
+
+	<!-- layout::alert_danger(message) -->
+	<div class="alert alert-danger alert-dismissible fade show" role="alert" th:fragment="alert_danger(message)" th:if="${message}">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+		[[${message}]]
+	</div>
 </body>
 
 </html>

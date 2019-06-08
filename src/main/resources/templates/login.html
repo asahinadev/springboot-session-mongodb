@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" class="h-100">
+<html class="h-100" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
 <meta charset="UTF-8">
@@ -9,54 +9,45 @@
 </head>
 
 <body class="h-100">
-	<header>
-		<nav class="navbar navbar-expand navbar-dark bg-dark">
-			<a class="navbar-brand" href="#">ログイン</a>
-			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#hNavi" aria-controls="hNavi" aria-expanded="false"
-				aria-label="Toggle navigation">
-				<span class="navbar-toggler-icon"></span>
-			</button>
-		</nav>
+
+	<header th:replace="layout::header('ログイン', 'login')">
+		<!-- 共通レイアウト -->
 	</header>
 
 	<section class="container pt-5">
 
-		<div class="mx-auto w-50 mb-3" th:if="${message}">
-			<div class="alert alert-warning" th:text="${message}">エラーメッセージ</div>
-		</div>
+		<div th:replace="layout::alert_warning(${message})">エラーメッセージ</div>
 
-		<div class="row">
-			<div class="col-3"></div>
-			<div class="col">
-				<div class="card">
-					<form class="card-body needs-validation" novalidate th:object="${form}" method="POST" th:action="@{/login}">
+		<div class="card w-75 mx-auto">
+			<form class="card-body needs-validation" novalidate th:object="${form}" method="POST" th:action="@{/login}">
 
-						<div class="form-group form-row">
-							<label class="col-4" for="username">アカウント</label>
-							<div class="col">
-								<input class="form-control" th:field="*{username}" th:errorclass="is-invalid">
-							</div>
-						</div>
-
-						<div class="form-group form-row">
-							<label class="col-4" for="password">パスワード</label>
-							<div class="col">
-								<input class="form-control" th:field="*{password}" th:errorclass="is-invalid">
-							</div>
-						</div>
-
-						<div class="col-12">
-							<button class="btn btn-primary btn-block btn-lg">ログイン</button>
-						</div>
-
-					</form>
+				<div class="form-group form-row">
+					<label class="col-4" for="username">アカウント</label>
+					<div class="col">
+						<input class="form-control" th:field="*{username}" th:errorclass="is-invalid">
+					</div>
 				</div>
-			</div>
-			<div class="col-3">
-				<div class="list-group">
-					<a th:href="@{/signup}" class="list-group-item">サインアップ</a>
+
+				<div class="form-group form-row">
+					<label class="col-4" for="password">パスワード</label>
+					<div class="col">
+						<input class="form-control" th:field="*{password}" th:errorclass="is-invalid">
+					</div>
 				</div>
-			</div>
+
+				<div class="form-group form-row">
+					<div class=" offset-4 col-8 checkbox">
+						<input type="checkbox" name="remember-me" id="remember-me" />
+						<!-- label -->
+						<label for="remember-me">ログイン状態を維持する</label>
+					</div>
+				</div>
+
+				<div class="col-12">
+					<button class="btn btn-primary btn-block btn-lg">ログイン</button>
+				</div>
+
+			</form>
 		</div>
 	</section>
 </body>

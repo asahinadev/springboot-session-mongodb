@@ -1,0 +1,19 @@
+.navbar-brand {
+	min-width: 150px;
+}
+
+td.row {
+	margin: 0px;
+}
+
+td.row>div.col {
+	padding: 0.1rem;
+}
+
+td.row>div.col>a.btn {
+	width: 100%;
+	padding: 0;
+	font-size: .875rem;
+	line-height: 1.5;
+	border-radius: .2rem;
+}

@@ -3,4 +3,4 @@ pluginManagement {
 		gradlePluginPortal()
 	}
 }
-rootProject.name = 'spring-demo-session-mongodb'
+rootProject.name = 'cms-mongodb'

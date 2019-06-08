@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html class="h-100" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+<meta charset="UTF-8">
+
+<th:block th:include="layout::head" />
+
+</head>
+
+<body class="h-100">
+
+	<header th:replace="layout::header('ホーム', 'home')">
+		<!-- 共通レイアウト -->
+	</header>
+
+	<section class="container pt-5">
+
+		<div th:replace="layout::alert_warning(${message})">エラーメッセージ</div>
+
+	</section>
+</body>
+
+
+</body>
+
+</html>

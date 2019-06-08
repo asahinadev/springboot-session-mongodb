@@ -75,7 +75,7 @@ public class LoginController {
 	}
 
 	@GetMapping(params = "logout")
-	public String logout(Model model) {
+	public String logout(@ModelAttribute("form") UserForm form, Model model) {
 
 		model.addAttribute("message", "ログアウトが成功しました。");
 		return "login";
