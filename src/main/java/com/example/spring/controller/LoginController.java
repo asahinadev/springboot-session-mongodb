@@ -8,19 +8,17 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.WebAttributes;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.spring.form.UserForm;
+import com.example.spring.helper.UriHelper;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Controller
-@RequestMapping("/login")
+@RequestMapping(AppControllerConst.Uri.LOGIN)
 public class LoginController {
 
 	/**
@@ -30,11 +28,10 @@ public class LoginController {
 	 * @param form    入力フォーム
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping()
+	@GetMapping(path = AppControllerConst.Path.INDEX)
 	public String login(@ModelAttribute("form") UserForm form) {
-
-		log.debug("start");
-		return "login";
+		return AppControllerConst.Tpl.LOGIN
+				+ AppControllerConst.Page.LOGIN;
 	}
 
 	/**
@@ -45,39 +42,37 @@ public class LoginController {
 	 * @param exception 認証エラー
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(params = "error")
+	@GetMapping(path = AppControllerConst.Path.INDEX, params = "error")
 	public String login(
-			Model model,
 			@ModelAttribute("form") UserForm form,
-			@SessionAttribute(name = WebAttributes.AUTHENTICATION_EXCEPTION, required = false) Exception exception) {
+			@SessionAttribute(name = WebAttributes.AUTHENTICATION_EXCEPTION, required = false) Exception exception,
+			RedirectAttributes attributes) {
 
 		if (exception == null) {
-			model.addAttribute("message", "エラーが発生しました。");
+			attributes.addFlashAttribute("message", "不明なエラーです");
 		} else {
-
 			if (exception instanceof DisabledException) {
-				model.addAttribute("message", "アカウントが無効です。");
+				attributes.addFlashAttribute("message", "アカウントが無効です");
 			} else if (exception instanceof LockedException) {
-				model.addAttribute("message", "アカウントが凍結中です。");
+				attributes.addFlashAttribute("message", "アカウントが凍結中です");
 			} else if (exception instanceof AccountExpiredException) {
-				model.addAttribute("message", "アカウントの有効期限が切れています。");
+				attributes.addFlashAttribute("message", "アカウントの有効期限が切れています");
 			} else if (exception instanceof CredentialsExpiredException) {
-				model.addAttribute("message", "パスワードの有効期限が切れています。");
+				attributes.addFlashAttribute("message", "パスワードの有効期限が切れています");
 			} else if (exception instanceof BadCredentialsException) {
-				model.addAttribute("message", "アカウントまたはパスワードが一致しませんでした。");
+				attributes.addFlashAttribute("message", "アカウントまたはパスワードが一致しませんでした");
 			} else if (exception instanceof UsernameNotFoundException) {
-				model.addAttribute("message", "アカウントまたはパスワードが一致しませんでした。");
+				attributes.addFlashAttribute("message", "アカウントまたはパスワードが一致しませんでした");
 			} else {
-				model.addAttribute("message", "アカウントまたはパスワードが一致しませんでした。");
+				attributes.addFlashAttribute("message", exception.getMessage());
 			}
 		}
-		return "login";
+		return UriHelper.redirect(AppControllerConst.Uri.LOGIN);
 	}
 
-	@GetMapping(params = "logout")
-	public String logout(@ModelAttribute("form") UserForm form, Model model) {
-
-		model.addAttribute("message", "ログアウトが成功しました。");
-		return "login";
+	@GetMapping(path = AppControllerConst.Path.INDEX, params = "logout")
+	public String logout(@ModelAttribute("form") UserForm form, RedirectAttributes attributes) {
+		attributes.addAttribute("message", "ログアウトが成功しました。");
+		return UriHelper.redirect(AppControllerConst.Uri.LOGIN);
 	}
 }

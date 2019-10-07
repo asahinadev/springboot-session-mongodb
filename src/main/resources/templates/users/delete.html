@@ -28,7 +28,7 @@
 				<div class="row">
 					<div class="col-8">
 						<div class="card">
-							<form class="card-body needs-validation" novalidate th:object="${form}" method="POST" th:action="@{/user/delete/{id}(id=${user.id})}">
+							<form class="card-body needs-validation" novalidate th:object="${form}" method="POST" th:action="@{/users/delete/{id}(id=${user.id})}">
 								<div class="form-group form-row">
 									<label class="col-4" for="username">アカウント</label>
 									<div class="col">
@@ -54,7 +54,7 @@
 						</div>
 					</div>
 					<div class="col">
-						<div th:replace="user/layout::sNavi('delete', ${user})">
+						<div th:replace="users/layout::sNavi('delete', ${user})">
 							<!--  -->
 						</div>
 					</div>

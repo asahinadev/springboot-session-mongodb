@@ -12,6 +12,10 @@ public class BeanConfig {
 	@Autowired
 	MessageSource messageSource;
 
+	/**
+	 * バリデーションメッセージの日本語化.
+	 * @return
+	 */
 	@Bean
 	public LocalValidatorFactoryBean validator() {
 

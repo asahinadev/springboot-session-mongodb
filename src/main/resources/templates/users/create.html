@@ -25,12 +25,12 @@
 
 				<div class="row">
 					<div class="col-8">
-						<div class="card" th:replace="user/layout::form('登録', @{/user/create})">
+						<div class="card" th:replace="users/layout::form('登録', @{/users/create})">
 							<!--  -->
 						</div>
 					</div>
 					<div class="col">
-						<div th:replace="user/layout::sNavi('create', ${user})">
+						<div th:replace="users/layout::sNavi('create', ${user})">
 							<!--  -->
 						</div>
 					</div>

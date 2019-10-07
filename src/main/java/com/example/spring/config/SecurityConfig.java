@@ -12,33 +12,61 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import com.example.spring.controller.AppControllerConst;
 import com.example.spring.service.UserService;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig
-		extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	public static final String HOME_PAGE = "/";
+	/**
+	 * HOME PAGE.
+	 */
+	public static final String HOME_PAGE = AppControllerConst.Uri.INDEX;
 
-	public static final String LOGIN_PAGE = "/login";
+	/**
+	 * LOGIN PAGE.
+	 */
+	public static final String LOGIN_PAGE = AppControllerConst.Uri.LOGIN;
 
-	public static final String LOGIN_AREA = "/login/**";
+	/**
+	 * LOGIN AREA.
+	 */
+	public static final String LOGIN_AREA = LOGIN_PAGE + "/**";
 
-	public static final String ERROR_AREA = "/error/**";
+	/**
+	 * LOGOUT AREA.
+	 */
+	public static final String LOGOUT_AREA = AppControllerConst.Uri.LOGOUT + "/**";
 
-	public static final String SIGNUP_AREA = "/signup/**";
+	/**
+	 * ERROR AREA.
+	 */
+	public static final String ERROR_AREA = AppControllerConst.Uri.ERROR + "/**";
 
+	/**
+	 * USER SIGNUP AREA
+	 */
+	public static final String SIGNUP_AREA = AppControllerConst.Uri.SIGNUP + "/**";
+
+	/**
+	 * USER NAME PARAMETER.
+	 */
 	public static final String PARAM_USERNAME = "username";
 
+	/**
+	 * USER PASSWORD PARAMETER.
+	 */
 	public static final String PARAM_PASSWORD = "password";
 
 	@Autowired
-	UserService userService;
+	protected UserService userService;
 
+	/**
+	 * Password Encoder.
+	 * 
+	 * @return {@link BCryptPasswordEncoder}.
+	 */
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 
@@ -46,42 +74,30 @@ public class SecurityConfig
 	}
 
 	@Override
-	protected void configure(AuthenticationManagerBuilder authentication) throws Exception {
-
-		super.configure(authentication);
-		authentication
-				.userDetailsService(userService)
-				.passwordEncoder(passwordEncoder());
-
-	}
-
-	@Override
 	public void configure(WebSecurity web) throws Exception {
 
-		// 標準
-		super.configure(web);
+		// 静的ファイルを許可する
 		web.ignoring().antMatchers(
-				"/webjars/**",
-				"/error/**",
-				"/css/**",
-				"/js/**",
-				"/image/**",
-				"/favicon.ico"
-
-		);
+				AppControllerConst.Uri.WEBJARS + "/**",
+				AppControllerConst.Uri.ERROR + "/**",
+				AppControllerConst.Uri.STYLE + "/**",
+				AppControllerConst.Uri.JSCRIPT + "/**",
+				AppControllerConst.Uri.IMAGES + "/**",
+				"/favicon.ico");
 
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		log.debug("{}::configure(http)", getClass());
-
 		// 認可の設定
-		http
-				.antMatcher("/**").authorizeRequests()
-				// エラーページ関連、ホームページ、サインアップ関連、ログイン関連
-				.antMatchers(ERROR_AREA, HOME_PAGE, SIGNUP_AREA, LOGIN_AREA).permitAll()
+		http.antMatcher("/**").authorizeRequests()
+
+				// エラーページ関連、ホームページ、サインアップ関連
+				.antMatchers(ERROR_AREA).permitAll()
+				.antMatchers(HOME_PAGE).permitAll()
+				.antMatchers(SIGNUP_AREA).permitAll()
+
 				// その他ページ郡
 				.anyRequest().authenticated();
 
@@ -89,15 +105,17 @@ public class SecurityConfig
 		http.formLogin()
 				.loginProcessingUrl(LOGIN_PAGE)
 				.loginPage(LOGIN_PAGE)
+
 				.failureUrl(LOGIN_PAGE + "?error")
-				.defaultSuccessUrl("/")
+				.defaultSuccessUrl(HOME_PAGE, true)
+
 				.usernameParameter(PARAM_USERNAME)
 				.passwordParameter(PARAM_PASSWORD)
 				.permitAll();
 
 		// ログアウト設定
 		http.logout()
-				.logoutRequestMatcher(new AntPathRequestMatcher("/logout**"))
+				.logoutRequestMatcher(new AntPathRequestMatcher(LOGOUT_AREA))
 				.logoutSuccessUrl(LOGIN_PAGE + "?logout");
 
 		// リメンバーミー
@@ -105,4 +123,19 @@ public class SecurityConfig
 		/**/
 
 	}
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder authentication) throws Exception {
+
+		// その他 認証設定を無効化する
+		super.configure(authentication);
+
+		// 認証サービス／パスワードエンコーダーを設定する
+		authentication
+				// User Details Service
+				.userDetailsService(userService)
+				// Password Encoder
+				.passwordEncoder(passwordEncoder());
+	}
+
 }

@@ -41,7 +41,7 @@
 						<a class="nav-link" href="#" th:href="@{/}">Home</a>
 					</li>
 					<li class="nav-item" th:classappend="${active == 'users' ? 'active' : ''}" sec:authorize="isAuthenticated()">
-						<a class="nav-link" href="#" th:href="@{/user}">Users</a>
+						<a class="nav-link" href="#" th:href="@{/users}">Users</a>
 					</li>
 				</ul>
 				<ul class="navbar-nav my-lg-0">

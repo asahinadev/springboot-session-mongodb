@@ -5,12 +5,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping(AppControllerConst.Page.INDEX)
 public class IndexController {
 
-	@GetMapping("")
+	@GetMapping(path = AppControllerConst.Path.INDEX)
 	public String index() {
 
-		return "index";
+		return AppControllerConst.Tpl.INDEX
+				+ AppControllerConst.Page.INDEX;
 	}
 }

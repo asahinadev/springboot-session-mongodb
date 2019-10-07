@@ -1,7 +1,8 @@
 package com.example.spring.controller;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,28 +16,25 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.example.spring.entity.Roles;
 import com.example.spring.entity.User;
 import com.example.spring.form.UserForm;
+import com.example.spring.helper.UriHelper;
 import com.example.spring.service.UserService;
 import com.example.spring.validation.group.Create;
 
 @Controller
-@RequestMapping(SignupController.URI_PREFIX)
+@RequestMapping(AppControllerConst.Uri.SIGNUP)
 public class SignupController {
-
-	public static final String URI_PREFIX = "/signup";
-
-	public static final String TPL_PREFIX = "signup/";
-
-	public static final String PATH_CREATE = "";
-
-	public static final String PAGE_CREATE = "index";
 
 	@Autowired
 	protected UserService service;
 
 	@ModelAttribute("roles")
 	public Roles[] roles() {
-
 		return Roles.values();
+	}
+
+	@ModelAttribute("user")
+	public User user() {
+		return new User();
 	}
 
 	/**
@@ -46,12 +44,10 @@ public class SignupController {
 	 * @param form    入力フォーム.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_CREATE)
+	@GetMapping(path = AppControllerConst.Path.INDEX)
 	public String create(Model model, @ModelAttribute("form") UserForm form) {
-
-		// 値の設定
-		model.addAttribute("user", new User());
-		return TPL_PREFIX + PAGE_CREATE;
+		return AppControllerConst.Tpl.SIGNUP
+				+ AppControllerConst.Page.INDEX;
 	}
 
 	/**
@@ -62,27 +58,26 @@ public class SignupController {
 	 * @param result  バリデーション結果
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@PostMapping(PATH_CREATE)
-	public String create(
-			Model model,
-			@Validated(Create.class) @ModelAttribute("form") UserForm form, BindingResult result,
-			RedirectAttributes redirect) {
-
-		// エラー判定
+	@PostMapping(path = AppControllerConst.Path.INDEX)
+	public String create(Model model,
+			@Validated(Create.class) @ModelAttribute("form") UserForm form,
+			BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
-			// 値の設定
-			model.addAttribute("user", new User());
-			return TPL_PREFIX + PAGE_CREATE;
+			return AppControllerConst.Tpl.SIGNUP
+					+ AppControllerConst.Page.INDEX;
 		}
-
-		// 登録処理
-		User user = new User();
-		BeanUtils.copyProperties(form, user);
-		user = service.insert(user);
-
-		// 更新結果をリダイレクト先に
+		User saveUser = service.insert(form);
 		redirect.addFlashAttribute("success", "登録に成功しました。");
-		return "redirect:/login";
+
+		if (saveUser.isEnabled()) {
+			SecurityContextHolder.getContext().setAuthentication(
+					new UsernamePasswordAuthenticationToken(
+							form.getUsername(), form.getPassword(), saveUser.getAuthorities()));
+
+			return UriHelper.redirect(AppControllerConst.Uri.INDEX);
+		} else {
+			return UriHelper.redirect(AppControllerConst.Uri.LOGIN);
+		}
 	}
 
 }

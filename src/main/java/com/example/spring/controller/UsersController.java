@@ -1,13 +1,12 @@
 package com.example.spring.controller;
 
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,63 +16,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import com.example.spring.entity.Roles;
 import com.example.spring.entity.User;
 import com.example.spring.form.UserForm;
+import com.example.spring.helper.UriHelper;
 import com.example.spring.service.UserService;
 import com.example.spring.validation.group.Create;
 import com.example.spring.validation.group.Save;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Controller
-@RequestMapping(UsersController.URI_PREFIX)
+@RequestMapping(AppControllerConst.Uri.USERS)
 public class UsersController {
-
-	public static final String URI_PREFIX = "/user";
-
-	public static final String TPL_PREFIX = "user/";
-
-	public static final String PAGE_INDEX = "index";
-
-	public static final String PAGE_CREATE = "create";
-
-	public static final String PAGE_MODIFY = "modify";
-
-	public static final String PAGE_DELETE = "delete";
-
-	public static final String PAGE_VIEW = "view";
-
-	public static final String PATH_INDEX = "";
-
-	public static final String PATH_CREATE = "/create";
-
-	public static final String PATH_MODIFY = "/modify/{id}";
-
-	public static final String PATH_DELETE = "/delete/{id}";
-
-	public static final String PATH_VIEW = "/view/{id}";
 
 	@Autowired
 	protected UserService service;
 
 	@ModelAttribute("roles")
 	public Roles[] roles() {
-
 		return Roles.values();
 	}
 
 	@ModelAttribute("user")
 	public User user(@PathVariable(value = "id", required = false) String id) {
-
 		if (StringUtils.isNotEmpty(id)) {
 			return service.findById(id);
 		}
 		return new User();
-
 	}
 
 	/**
@@ -82,15 +51,10 @@ public class UsersController {
 	 * @param request リクエスト情報.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_INDEX)
-	public String index(HttpServletRequest request) {
-
-		List<User> users = service.findAll();
-		log.debug("{}", users);
-
-		// 値の設定
-		request.setAttribute("users", users);
-		return TPL_PREFIX + PAGE_INDEX;
+	@GetMapping(path = AppControllerConst.Path.INDEX)
+	public String index(Model model, @PageableDefault(page = 0, size = 20) Pageable page) {
+		model.addAttribute("users", service.findAll(page));
+		return AppControllerConst.Tpl.USERS + AppControllerConst.Page.INDEX;
 
 	}
 
@@ -101,10 +65,9 @@ public class UsersController {
 	 * @param form    入力フォーム.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_CREATE)
+	@GetMapping(path = AppControllerConst.Path.CREATE)
 	public String create(@ModelAttribute("form") UserForm form) {
-
-		return TPL_PREFIX + PAGE_CREATE;
+		return AppControllerConst.Tpl.USERS + AppControllerConst.Page.CREATE;
 	}
 
 	/**
@@ -115,27 +78,16 @@ public class UsersController {
 	 * @param result  バリデーション結果
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@PostMapping(PATH_CREATE)
+	@PostMapping(path = AppControllerConst.Path.CREATE)
 	public String create(
-			@Validated(Create.class) @ModelAttribute("form") UserForm form, BindingResult result,
-			RedirectAttributes redirect) {
-
-		// エラー判定
+			@Validated(Create.class) @ModelAttribute("form") UserForm form,
+			BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
-			return TPL_PREFIX + PAGE_CREATE;
+			return AppControllerConst.Tpl.USERS + AppControllerConst.Page.CREATE;
 		}
-
-		// 登録処理
-		User user = new User();
-		BeanUtils.copyProperties(form, user);
-		user = service.insert(user);
-		log.debug("user {}", user);
-
-		// 更新結果をリダイレクト先に
+		User saveUser = service.insert(form);
 		redirect.addFlashAttribute("success", "登録に成功しました。");
-
-		return "redirect:"
-				+ UriComponentsBuilder.fromPath(URI_PREFIX + PATH_MODIFY).build(user.getId()).toASCIIString();
+		return UriHelper.redirect(AppControllerConst.Uri.USERS + AppControllerConst.Path.MODIFY, saveUser.getId());
 	}
 
 	/**
@@ -146,18 +98,9 @@ public class UsersController {
 	 * @param form    入力フォーム.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_MODIFY)
-	public String modify(
-			@ModelAttribute("user") User user,
-			@ModelAttribute("form") UserForm form) {
-
-		// 対象情報取得
-		log.debug("user {}", user);
-
-		// 値の設定
-		BeanUtils.copyProperties(user, form);
-
-		return TPL_PREFIX + PAGE_MODIFY;
+	@GetMapping(path = AppControllerConst.Path.MODIFY)
+	public String modify(@ModelAttribute("user") User user, @ModelAttribute("form") UserForm form) {
+		return view(user, form, AppControllerConst.Tpl.USERS + AppControllerConst.Page.MODIFY);
 	}
 
 	/**
@@ -169,30 +112,17 @@ public class UsersController {
 	 * @param result  バリデーション結果
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@PostMapping(PATH_MODIFY)
+	@PostMapping(path = AppControllerConst.Path.MODIFY)
 	public String modify(
 			@ModelAttribute("user") User user,
-			@Validated(Save.class) @ModelAttribute("form") UserForm form, BindingResult result,
-			RedirectAttributes redirect) {
-
-		// 対象情報取得
-		log.debug("user {}", user);
-
-		// エラー判定
+			@Validated(Save.class) @ModelAttribute("form") UserForm form,
+			BindingResult result, RedirectAttributes redirect) {
 		if (result.hasErrors()) {
-			return TPL_PREFIX + PAGE_MODIFY;
+			return AppControllerConst.Tpl.USERS + AppControllerConst.Page.MODIFY;
 		}
-
-		// 更新処理
-		BeanUtils.copyProperties(form, user);
-		user = service.save(user);
-		log.debug("user {}", user);
-
-		// 更新結果をリダイレクト先に
+		User saveUser = service.save(form, user);
 		redirect.addFlashAttribute("success", "更新に成功しました。");
-
-		return "redirect:"
-				+ UriComponentsBuilder.fromPath(URI_PREFIX + PATH_MODIFY).build(user.getId()).toASCIIString();
+		return UriHelper.redirect(AppControllerConst.Uri.USERS + AppControllerConst.Path.MODIFY, saveUser.getId());
 	}
 
 	/**
@@ -203,18 +133,9 @@ public class UsersController {
 	 * @param form    入力フォーム.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_VIEW)
-	public String view(
-			@ModelAttribute("user") User user,
-			@ModelAttribute("form") UserForm form) {
-
-		// 対象情報取得
-		log.debug("user {}", user);
-
-		// 値の設定
-		BeanUtils.copyProperties(user, form);
-
-		return TPL_PREFIX + PAGE_VIEW;
+	@GetMapping(path = AppControllerConst.Path.VIEW)
+	public String view(@ModelAttribute("user") User user, @ModelAttribute("form") UserForm form) {
+		return view(user, form, AppControllerConst.Tpl.USERS + AppControllerConst.Page.VIEW);
 	}
 
 	/**
@@ -225,18 +146,14 @@ public class UsersController {
 	 * @param form    入力フォーム.
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@GetMapping(PATH_DELETE)
-	public String delete(
-			@ModelAttribute("user") User user,
-			@ModelAttribute("form") UserForm form) {
+	@GetMapping(path = AppControllerConst.Path.DELETE)
+	public String delete(@ModelAttribute("user") User user, @ModelAttribute("form") UserForm form) {
+		return view(user, form, AppControllerConst.Tpl.USERS + AppControllerConst.Page.DELETE);
+	}
 
-		// 対象情報取得
-		log.debug("user {}", user);
-
-		// 値の設定
+	protected String view(User user, UserForm form, String tplPath) {
 		BeanUtils.copyProperties(user, form);
-
-		return TPL_PREFIX + PAGE_DELETE;
+		return tplPath;
 	}
 
 	/**
@@ -245,22 +162,11 @@ public class UsersController {
 	 * @param id 識別用ID
 	 * @return 画面表示用ワード（テンプレート、リダイレクト）.
 	 */
-	@PostMapping(PATH_DELETE)
-	@DeleteMapping(PATH_DELETE)
-	public String delete(
-			@ModelAttribute("user") User user,
-			RedirectAttributes redirect) {
-
-		// 対象情報取得
-		log.debug("user {}", user);
-
-		// 削除処理
+	@PostMapping(path = AppControllerConst.Path.DELETE)
+	@DeleteMapping(path = AppControllerConst.Path.DELETE)
+	public String delete(@ModelAttribute("user") User user, RedirectAttributes redirect) {
 		service.delete(user);
-
-		// 更新結果をリダイレクト先に
 		redirect.addFlashAttribute("success", "削除に成功しました。");
-
-		return "redirect:"
-				+ UriComponentsBuilder.fromPath(URI_PREFIX + PATH_INDEX).toUriString();
+		return UriHelper.redirect(AppControllerConst.Uri.USERS + AppControllerConst.Path.INDEX);
 	}
 }

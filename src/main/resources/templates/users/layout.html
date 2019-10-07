@@ -47,16 +47,16 @@
 
 		<div th:object="${user}" class="list-group">
 			<!--  -->
-			<a class="list-group-item" th:classappend="${active == 'index' ? 'active disabled' : ''}" th:href="@{/user}">一覧画面</a>
+			<a class="list-group-item" th:classappend="${active == 'index' ? 'active disabled' : ''}" th:href="@{/users}">一覧画面</a>
 			<!--  -->
-			<a class="list-group-item" th:classappend="${active == 'create' ? 'active disabled' : ''}" th:href="@{/user/create}">新規登録</a>
+			<a class="list-group-item" th:classappend="${active == 'create' ? 'active disabled' : ''}" th:href="@{/users/create}">新規登録</a>
 			<!--  -->
-			<a class="list-group-item" th:if="*{id}" th:classappend="${active == 'modify' ? 'active disabled' : ''}" th:href="@{/user/modify/{id}(id=*{id})}">変更画面</a>
+			<a class="list-group-item" th:if="*{id}" th:classappend="${active == 'modify' ? 'active disabled' : ''}" th:href="@{/users/modify/{id}(id=*{id})}">変更画面</a>
 			<!--  -->
-			<a class="list-group-item" th:if="*{id}" th:classappend="${active == 'view' ? 'active disabled' : ''}" th:href="@{/user/view/{id}(id=*{id})}">確認画面</a>
+			<a class="list-group-item" th:if="*{id}" th:classappend="${active == 'view' ? 'active disabled' : ''}" th:href="@{/users/view/{id}(id=*{id})}">確認画面</a>
 			<!--  -->
 			<a class="list-group-item list-group-item-danger" th:if="*{id}" th:classappend="${active == 'delete' ? 'active disabled' : ''}"
-				th:href="@{/user/delete/{id}(id=*{id})}">削除画面</a>
+				th:href="@{/users/delete/{id}(id=*{id})}">削除画面</a>
 		</div>
 	</div>
 </body>
