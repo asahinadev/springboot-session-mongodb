@@ -11,9 +11,19 @@ spring:
     encoding: UTF-8
 
 # env setting
-# spring.data.mongodb.uri
-# spring.data.mongodb.username
-# spring.data.mongodb.password
+  data:    mongodb:      # SPRING: SPRING_DATA_MONGODB_HOST
+      host: 192.168.99.102
+      # SPRING: SPRING_DATA_MONGODB_PORT
+      port: 32775
+      # SPRING: SPRING_DATA_MONGODB_USERNAME
+      # DOCKER: MONGODB_USERNAME
+      username: springboot
+      # SPRING: SPRING_DATA_MONGODB_PASSWORD
+      # DOCKER: MONGODB_PASSWORD
+      password: springboot
+      # SPRING: SPRING_DATA_MONGODB_DATABASE
+      # DOCKER: MONGODB_DATABASE
+      database: springboot
 
 logging:  level:
     root: OFF    com.example: DEBUG
