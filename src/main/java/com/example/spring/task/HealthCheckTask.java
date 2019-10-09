@@ -9,10 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class DbInitializeTask {
+public class HealthCheckTask {
 
 	@Scheduled(fixedRate = 5000)
 	public void reportCurrentTime() {
-		log.info("The time is now {}", LocalDateTime.now());
+		log.trace("The time is now {}", LocalDateTime.now());
 	}
 }
