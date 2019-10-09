@@ -10,10 +10,10 @@ td.row>div.col {
 	padding: 0.1rem;
 }
 
-td.row>div.col>a.btn {
-	width: 100%;
-	padding: 0;
-	font-size: .875rem;
+.btn-sq {
+	border-radius: .3rem;
 	line-height: 1.5;
-	border-radius: .2rem;
+	padding: auto;
+	width: 2.5rem;
+	height: 2.5rem;
 }

@@ -27,7 +27,7 @@
 		<div th:replace="layout::alert_success(${success})">処理成功時のメッセージ</div>
 		<div th:replace="layout::alert_danger(${message})">処理失敗時のメッセージ</div>
 
-		<table class="table table-bordered table-sm" id="users" data-info="false" data-paging="false" data-searching="false" data-ordering="false">
+		<table class="table table-bordered" id="users" data-info="false" data-paging="false" data-searching="false" data-ordering="false">
 			<thead>
 				<tr>
 					<th>アカウント</th>
@@ -37,25 +37,28 @@
 					<th>アクション</th>
 				</tr>
 			</thead>
-			<tbody th:each="user : ${users}" th:object="${user}">
-				<tr>
+			<tbody >
+				<tr th:each="user : ${users}" th:object="${user}" th:classappend="${user.enabled} ? 'table-primary' : 'table-secondary'" >
 					<td class="text-left" th:text="*{username}">USERNAME</td>
 					<td class="text-left" th:text="*{email}">EMAIL</td>
 					<td class="text-center" th:text="*{enabled}">ACCEPT</td>
-					<td class="text-center" th:text="*{authorities}">ROLE</td>
-					<td class="row">
-						<!--  -->
-						<div class="col">
-							<a class="btn btn-primary fas fa-edit" th:href="@{/users/modify/{id}(id=*{id})}" title="編集"></a>
+					<td class="text-left" >
+						<div class="badge badge-secondary" th:each="authority  : *{authorities}">
+							<div th:text="${authority}"></div>
 						</div>
+					</td>
+					<td >
 						<!--  -->
-						<div class="col">
-							<a class="btn btn-info fas fa-address-card" th:href="@{/users/view/{id}(id=*{id})}" title="確認"></a>
-						</div>
+						<a class="btn btn-info fas" th:href="@{/users/view/{id}(id=*{id})}" title="確認">&#xf007;</a>
 						<!--  -->
-						<div class="col">
-							<a class="btn btn-danger fas fa-trash" th:href="@{/users/delete/{id}(id=*{id})}" title="削除"></a>
-						</div>
+						<a class="btn btn-primary fas" th:href="@{/users/modify/{id}(id=*{id})}" title="変更">&#xf4ff;</a>
+						&nbsp;
+						<!--  -->
+						<a class="btn btn-secondary fas" th:href="*{ 'mailto:' + email }" title="連絡">&#xf0e0;</a>
+						&nbsp;
+						<!--  -->
+						<a class="btn btn-danger fas" th:href="@{/users/delete/{id}(id=*{id})}" title="削除">&#xf506;</a>
+						
 					</td>
 				</tr>
 			</tbody>

@@ -16,25 +16,22 @@
 
 	<section class="container mx-auto pt-5">
 
-		<div class="card">
-			<div class="card-body">
-				<h2 class="card-title">ユーザー変更</h2>
+		<h2 >ユーザー変更</h2>
 
-				<div th:replace="layout::alert_success(${success})">処理成功時のメッセージ</div>
-				<div th:replace="layout::alert_danger(${message})">処理失敗時のメッセージ</div>
+		<div th:replace="layout::alert_success(${success})">処理成功時のメッセージ</div>
+		<div th:replace="layout::alert_danger(${message})">処理失敗時のメッセージ</div>
 
-				<div class="row">
-					<div class="col-8">
-						<div class="card" th:replace="users/layout::form('更新',  @{/users/modify/{id}(id=${user.id})})"></div>
-					</div>
-					<div class="col">
-						<div th:replace="users/layout::sNavi('modify', ${user})">
-							<!--  -->
-						</div>
-					</div>
+		<div class="row">
+			<div class="col-8">
+				<div class="card" th:replace="users/layout::form('更新',  @{/users/modify/{id}(id=${user.id})}, false)"></div>
+			</div>
+			<div class="col">
+				<div th:replace="users/layout::sNavi('modify', ${user})">
+					<!--  -->
 				</div>
 			</div>
 		</div>
+
 	</section>
 </body>
 
