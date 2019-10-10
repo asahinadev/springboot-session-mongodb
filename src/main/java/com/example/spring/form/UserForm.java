@@ -36,4 +36,8 @@ public class UserForm {
 	@Length(min = 8, max = 16, groups = { Save.class, Create.class })
 	String password;
 
+	boolean enabled;
+	
+	boolean locked;
+
 }

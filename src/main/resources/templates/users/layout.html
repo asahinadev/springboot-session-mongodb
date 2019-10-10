@@ -13,48 +13,12 @@
 	<div class="card" th:fragment="form(buttonText, action, readonly)">
 		<form class="card-body needs-validation" novalidate method="POST" th:action="${action}" th:object="${form}">
 
-			<div class="form-group form-row">
-				<label class="col-4" for="username">アカウント</label>
-				<div class="col">
-					<div class="input-group mb-2">
-						<div class="input-group-prepend">
-							<div class="input-group-text fas">&#xf007;</div>
-						</div>
-						<input class="form-control" th:field="*{username}" th:errorclass="is-invalid" th:unless="${readonly}">
-						<input class="form-control" th:field="*{username}" th:errorclass="is-invalid" th:if="${readonly}" readonly>
-						<div class="invalid-feedback" th:each="err,st : ${#lists.sort(#fields.errors('username'))}" th:text="${err}" th:if="${st.index == 0}">エラーメッセージが出力されます</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="form-group form-row">
-				<label class="col-4" for="email">メールアドレス</label>
-				<div class="col">
-					<div class="input-group mb-2">
-						<div class="input-group-prepend">
-							<div class="input-group-text fas">&#xf0e0;</div>
-						</div>
-						<input class="form-control" th:field="*{email}" th:errorclass="is-invalid" th:unless="${readonly}">
-						<input class="form-control" th:field="*{email}" th:errorclass="is-invalid" th:if="${readonly}" readonly>
-						<div class="invalid-feedback" th:each="err,st : ${#lists.sort(#fields.errors('email'))}" th:text="${err}" th:if="${st.index == 0}">エラーメッセージが出力されます</div>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="form-group form-row">
-				<label class="col-4" for="password">パスワード</label>
-				<div class="col">
-					<div class="input-group mb-2">
-						<div class="input-group-prepend">
-							<div class="input-group-text fas">&#xf084;</div>
-						</div>
-						<input type="text" class="form-control" th:field="*{password}" th:errorclass="is-invalid" th:type="password" th:unless="${readonly}">
-						<input class="form-control" th:field="*{password}" th:errorclass="is-invalid" th:if="${readonly}" readonly placeholder="セキュリティのため非表示">
-						<div class="invalid-feedback" th:each="err,st : ${#lists.sort(#fields.errors('password'))}" th:text="${err}" th:if="${st.index == 0}">エラーメッセージが出力されます</div>
-					</div>
-				</div>
-			</div>
+			<div th:replace="layout::form_text('アカウント', 'username', 'text', '&#xf007;')"></div>
+			<div th:replace="layout::form_text('メールアドレス', 'email', 'email', '&#xf0e0;')"></div>
+			<div th:replace="layout::form_text('パスワード', 'password', 'password', '&#xf084;')"></div>
+			
+			<div th:replace="layout::form_check('有効なアカウント', 'enabled', '有効', '無効', 'btn btn-outline-primary')"></div>
+			<div th:replace="layout::form_check('アカウントロック', 'locked', '有効', '無効', 'btn btn-outline-danger')"></div>
 
 			<div class="form-group form-row mt-5" th:if="${buttonText}">
 				<button class="btn btn-primary btn-block btn-lg" th:text="${buttonText}">ボタン</button>

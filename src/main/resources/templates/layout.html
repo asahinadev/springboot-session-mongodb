@@ -58,6 +58,42 @@
 			</div>
 		</nav>
 	</header>
+	
+	<!-- layout::form_text(label, field, type) -->
+	<th:block th:fragment="form_text(label, field, type, slabel)">
+		<div class="form-group form-row">
+			<label class="col-4" th:for="${field}" th:text=${label}>ラベル</label>
+			<div class="col">
+				<div class="input-group mb-2">
+					<div class="input-group-prepend">
+						<div class="input-group-text fas" th:text="${slabel}">&nbsp;</div>
+					</div>
+					<input class="form-control" th:field="*{__${field}__}" th:errorclass="is-invalid" th:readonly="${readonly}" th:type="${type}">
+					<div th:replace="layout::invalid_feedback(${#fields.errors(field)})"></div>
+				</div>
+			</div>
+		</div>
+	</th:block>	
+	
+	<!-- layout::form_check(label, field, etext, dtext, btn_class) -->
+	<th:block th:fragment="form_check(label, field, etext, dtext, btn_class)">
+		<div class="form-group form-row">
+			<label class="col-4" th:for="${field}" th:text=${label}>ラベル</label>
+			<div class="col">
+				<div class="btn-group btn-group-toggle w-100" data-toggle="buttons">
+					<label th:class="${btn_class}" th:classappend="*{__${field}__} ? 'active' : ''">
+						<input type="checkbox" autocomplete="off" checked th:field="*{__${field}__}"  th:text="*{__${field}__} ? ${etext} : ${dtext}" th:readonly="${readonly}">
+					</label>
+				</div>
+			</div>
+		</div>
+	</th:block>	
+	
+	
+	<!-- layout::invalid_feedback(errors) -->
+	<th:block th:fragment="invalid_feedback(errors)">
+		<div class="invalid-feedback" th:each="err,st : ${#lists.sort(errors)}" th:text="${err}" th:if="${st.index == 0}">エラーメッセージが出力されます</div>
+	</th:block>
 
 	<!-- layout::alert_success(message) -->
 	<div class="alert alert-success alert-dismissible fade show" role="alert" th:fragment="alert_success(message)" th:if="${message}">
